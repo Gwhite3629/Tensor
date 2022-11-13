@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.fs": "fsharp",
+        "memory": "cpp",
+        "functional": "cpp",
+        "type_traits": "cpp"
+    }
+}

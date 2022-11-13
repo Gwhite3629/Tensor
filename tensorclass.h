@@ -17,7 +17,9 @@ public:
     ~Tensor(void);
     Tensor(const T, const T);
 
-    void print(void);
+    /*
+     * INDEX
+     */
 
     template<typename... Args>
     T& operator()(Args &&...);
@@ -27,24 +29,65 @@ public:
     T& operator()(std::vector<int>);
     T operator()(std::vector<int>) const;
 
+    /*
+     * OPERATORS
+     */
+
+    // Assignment
     void operator=(const Tensor<T, I...>&);
     void operator=(const T);
 
+    // Addition
     Tensor operator+(const Tensor<T, I...>&) const;
     Tensor operator+(const T) const;
+    void operator+=(const Tensor<T, I...>&) const;
+    void operator+=(const T) const;
 
+    // Subtraction
+    Tensor operator-(const Tensor<T, I...>&) const;
+    Tensor operator-(const T) const;
+    void operator-=(const Tensor<T, I...>&) const;
+    void operator-=(const T) const;
+
+    // Multiplication
+    Tensor operator*(const Tensor<T, I...>&) const;
+    Tensor operator*(const T) const;
+    void operator*=(const Tensor<T, I...>&) const;
+    void operator*=(const T) const;
+
+    // Division
+    Tensor operator/(const Tensor<T, I...>&) const;
+    Tensor operator/(const T) const;
+    void operator/=(const Tensor<T, I...>&) const;
+    void operator/=(const T) const;
+
+    // Adds all elements of tensor
     T sum(void);
 
+    // Modest attempt to print
+    void print(void);
+
 private:
+    // Raw data
     T *data = NULL;
+
+    // Number of dims
     int dims;
+
+    // Determined at init
     bool square;
+    
+    // Cached on first use of dynamic time calculations
     std::vector<int> dimensions;
+
+    // Cached
     int max_idx;
 
+    // Compile time internal index calculation
     template<typename... Args>
     int calc_index(Args &&...) const;
 
+    // Dynamic time index calculation
     int calc_index(std::vector<int>) const;
 
     std::vector<int> index(int) const;
@@ -218,6 +261,130 @@ Tensor<T, I...> Tensor<T, I...>::operator+(const T v) const
         r.data[i] = data[i] + v;
     }
     return r;
+}
+
+template <class T, size_t... I>
+void Tensor<T, I...>::operator+=(const Tensor<T, I...>&) const
+{
+    for (int i = 0; i < max_idx; i++) {
+        data[i] = data[i] + t.data[i];
+    }
+}
+
+template <class T, size_t... I>
+void Tensor<T, I...>::operator+=(const T) const
+{
+    for (int i = 0; i < max_idx; i++) {
+        data[i] = data[i] + v;
+    }
+}
+
+template <class T, size_t... I>
+Tensor<T, I...> Tensor<T, I...>::operator-(const Tensor<T, I...>& t) const
+{
+    Tensor<T, I...> r;
+    for (int i = 0; i < max_idx; i++) {
+        r.data[i] = data[i] - t.data[i];
+    }
+    return r;
+}
+
+template <class T, size_t... I>
+Tensor<T, I...> Tensor<T, I...>::operator-(const T v) const
+{
+    Tensor<T, I...> r;
+    for (int i = 0; i < max_idx; i++) {
+        r.data[i] = data[i] - v;
+    }
+    return r;
+}
+
+template <class T, size_t... I>
+void Tensor<T, I...>::operator-=(const Tensor<T, I...>& t) const
+{
+    for (int i = 0; i < max_idx; i++) {
+        data[i] = data[i] - t.data[i];
+    }
+}
+
+template <class T, size_t... I>
+void Tensor<T, I...>::operator-=(const T v) const
+{
+    for (int i = 0; i < max_idx; i++) {
+        data[i] = data[i] - v;
+    }
+}
+
+template <class T, size_t... I>
+Tensor<T, I...> Tensor<T, I...>::operator*(const Tensor<T, I...>& t) const
+{
+    Tensor<T, I...> r;
+    for (int i = 0; i < max_idx; i++) {
+        r.data[i] = data[i] * t.data[i];
+    }
+    return r;
+}
+
+template <class T, size_t... I>
+Tensor<T, I...> Tensor<T, I...>::operator*(const T v) const
+{
+    Tensor<T, I...> r;
+    for (int i = 0; i < max_idx; i++) {
+        r.data[i] = data[i] * v;
+    }
+    return r;
+}
+
+template <class T, size_t... I>
+void Tensor<T, I...>::operator*=(const Tensor<T, I...>& t) const
+{
+    for (int i = 0; i < max_idx; i++) {
+        data[i] = data[i] * t.data[i];
+    }
+}
+
+template <class T, size_t... I>
+void Tensor<T, I...>::operator*=(const T v) const
+{
+    for (int i = 0; i < max_idx; i++) {
+        data[i] = data[i] * v;
+    }
+}
+
+template <class T, size_t... I>
+Tensor<T, I...> Tensor<T, I...>::operator/(const Tensor<T, I...>& t) const
+{
+    Tensor<T, I...> r;
+    for (int i = 0; i < max_idx; i++) {
+        r.data[i] = data[i] * t.data[i];
+    }
+    return r;
+}
+
+template <class T, size_t... I>
+Tensor<T, I...> Tensor<T, I...>::operator/(const T v) const
+{
+    Tensor<T, I...> r;
+    for (int i = 0; i < max_idx; i++) {
+        r.data[i] = data[i] / v;
+    }
+    return r;
+}
+
+template <class T, size_t... I>
+void Tensor<T, I...>::operator/=(const Tensor<T, I...>& t) const
+{
+    for (int i = 0; i < max_idx; i++) {
+        data[i] = data[i] / t.data[i];
+    }
+}
+
+template <class T, size_t... I>
+void Tensor<T, I...>::operator/=(const T v) const
+{
+    for (int i = 0; i < max_idx; i++) {
+        data[i] = data[i] / v;
+    }
 }
 
 template <class T, size_t... I>
