@@ -1,28 +1,20 @@
 #include "tensorclass.h"
 
 #include <iostream>
+#include <functional>
 
 int main(void)
 {
-    double s1;
-    double s2;
-    double s3;
+    Tensor<double, 3, 3, 3> t(2.0, 2.0);
+    int arg = 1;
 
-    Tensor<double, 100, 100, 100> t1(-1.0, 0.0);
-    Tensor<double, 100, 100, 100> t2( 0.0, 1.0);
+    std::function<double(double, double, int, int*)> 
+    L = [=](const double o1, const double o2, const int idx, auto *c) 
+    {double t; (idx == 0) ? t = (o1*o2 + (*c)) : t = (o1*o2 + (*c))/idx; (*c) = t; return t; };
 
-    Tensor<double, 100, 100, 100> t3;
+    t.iterate(1.0, L, &arg, 9, 18);
 
-    t3 = t1 + t2;
-
-    s1 = t1.sum();
-    s2 = t2.sum();
-    s3 = t3.sum();
-
-    std::cout << s1 << std::endl;
-    std::cout << s2 << std::endl;
-    std::cout << s1 + s2 << std::endl;
-    std::cout << s3 << std::endl;
+    t.print();
 
     return 0;
 }
